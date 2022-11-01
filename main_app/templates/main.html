@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Links</title>
+</head>
+<body>
+    <h2>Create a shortened link</h2>
+    <form method="post" action="/add_link">
+        <input type="text" name="long_url" placeholder="long url">
+        <select name="type_access">
+            <option value="public">public</option>
+            <option value="auth">auth</option>
+            <option value="private">private</option>
+        </select>
+
+        <button type="submit">Add link</button>
+    </form>
+
+    <h3>Links list:</h3>
+    {% for link in data['shortened_links'] %}
+    <div>
+        {{ data['server_url'] + '/' + link.token }}
+    </div>
+    {% endfor %}
+</body>
+</html>
