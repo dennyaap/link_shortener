@@ -9,31 +9,46 @@ from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    return render_template('index.html')
+
 @app.route('/<token>', methods=['GET', 'POST'])
-def index(token):
-    long_url = Shortened_link.query.filter_by(token=token).first().long_url
-    print(long_url)
-    return redirect(long_url)
+def redirect_page(token):
+    shortened_link = Shortened_link.query.filter_by(token=token).first()
+    
+    if shortened_link is None:
+        return 'No such links'
+
+    return redirect(shortened_link.long_url)
+
 
 @app.route('/main', methods=['GET'])
 @login_required
 def main():
     data = dict()
 
-    data['shortened_links'] = Shortened_link.query.filter_by(user_id=current_user.id).all()
     data['server_url'] = server_url
+    data['shortened_links'] = Shortened_link.query.filter_by(user_id=current_user.id).all()
+    data['access_types'] = ['public', 'auth', 'private']
 
     return render_template('main.html', data=data)
 
 @app.route('/add_link', methods=['POST'])
 @login_required
-def add_message():
+def add_link():
     long_url = request.form['long_url']
+    pseudonym = request.form['pseudonym']
     type_access = request.form['type_access']
 
-    token = hashlib.md5(long_url.encode()).hexdigest()[:random.randint(8,12)]
+    if pseudonym:
+        token = pseudonym
+    else:
+        token = hashlib.md5(long_url.encode()).hexdigest()[:random.randint(8,12)]
+
     user_id = current_user.id
 
+    flash('Please fill in the long url')
     db.session.add(Shortened_link(token, long_url, type_access, user_id))
     db.session.commit()
 
@@ -62,7 +77,7 @@ def login():
 
         return render_template('login.html')
     else:
-        return redirect(url_for('start'))
+        return redirect(url_for('index'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -78,7 +93,9 @@ def register():
             db.session.add(new_user)
             db.session.commit()
 
-            return redirect(url_for('login'))
+            login_user(new_user)
+
+            return redirect(url_for('main'))
 
     return render_template('register.html')
 
