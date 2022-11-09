@@ -8,5 +8,12 @@
 </head>
 <body>
     Welcome to shortener_links!
+    {% if isAuth %}
+        <a href="{{ url_for('main') }}">Main</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    {% else %}
+        <a href="{{ url_for('register') }}">Register</a>
+        <a href="{{ url_for('login') }}">Login</a>
+    {% endif %}
 </body>
 </html>

@@ -7,6 +7,7 @@
     <title>Links</title>
 </head>
 <body>
+    <a href="{{ url_for('logout') }}">Logout</a>
     <h2>Create a shortened link</h2>
     <form method="post" action="/add_link">
         <input type="text" name="long_url" placeholder="long url">
@@ -35,8 +36,8 @@
     {% if data['shortened_links'] %}
     <table border="1">
         <tr>
-            <th>shortened</th>
             <th>long</th>
+            <th>shortened</th>
             <th>access</th>
         </tr>
         {% for link in data['shortened_links'] %}
@@ -44,7 +45,7 @@
                 <td>{{ link.long_url }}</td>
                 <td>{{ data['server_url'] + '/' + link.token }}</td>
                 <td>
-                    <select name="current_type_access">
+                    <select name="current_type_access" type="submit">
                         {% for access_type in data['access_types'] %}
                             {% if access_type == link.access_type %}
                                 <option value="{{ link.access_type }}" selected>{{ link.access_type }}</option>

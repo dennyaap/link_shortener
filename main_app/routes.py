@@ -11,7 +11,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    return render_template('index.html', isAuth=current_user.is_authenticated)
 
 @app.route('/<token>', methods=['GET', 'POST'])
 def redirect_page(token):
@@ -59,6 +59,9 @@ def login():
     if current_user.is_anonymous:
         next_page = request.args.get('next')
 
+        if next_page is None:
+            next_page = url_for('main')
+
         if request.method == 'POST':
             login = request.form['login']
             password = request.form['password']
@@ -77,7 +80,7 @@ def login():
 
         return render_template('login.html')
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for('main'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -105,7 +108,7 @@ def register():
 def logout():
     logout_user()
     
-    return redirect(url_for('start'))
+    return redirect(url_for('index'))
 
 @app.after_request
 def redirect_to_signin(response):
