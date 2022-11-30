@@ -36,13 +36,11 @@
     {% if data['shortened_links'] %}
     <table border="1">
         <tr>
-            <th>long</th>
             <th>shortened</th>
             <th>access</th>
         </tr>
         {% for link in data['shortened_links'] %}
             <tr>
-                <td>{{ link.long_url }}</td>
                 <td>{{ data['server_url'] + '/' + link.token }}</td>
                 <td>
                     <select name="current_type_access" type="submit">

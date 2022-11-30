@@ -4,7 +4,7 @@ from main_app.db_config import db
 
 import hashlib, random
 
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, session
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -16,11 +16,33 @@ def index():
 @app.route('/<token>', methods=['GET', 'POST'])
 def redirect_page(token):
     shortened_link = Shortened_link.query.filter_by(token=token).first()
-    
-    if shortened_link is None:
-        return 'No such links'
 
-    return redirect(shortened_link.long_url)
+    if shortened_link is None:
+        flash('No such link')
+
+        return render_template('index.html')
+    else:
+        access_type = shortened_link.access_type
+        is_authenticated = current_user.is_authenticated
+        long_url = shortened_link.long_url
+        user_id = shortened_link.user_id
+        
+        if access_type == 'public':
+            return redirect(long_url)
+        elif is_authenticated:
+            if access_type == 'auth':
+                return redirect(long_url)
+            elif access_type == 'private':
+                if user_id == current_user.id:
+                    return redirect(long_url)
+                else:
+                    flash("You don't have access")
+
+                    return redirect(url_for('index'))
+        else:
+            flash('You are not authorized')
+            
+            return redirect(url_for('index'))
 
 
 @app.route('/main', methods=['GET'])
