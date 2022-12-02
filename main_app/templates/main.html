@@ -10,15 +10,15 @@
     <a href="{{ url_for('logout') }}">Logout</a>
     <h2>Create a shortened link</h2>
     <form method="post" action="/add_link">
-        <input type="text" name="long_url" placeholder="long url">
-        <input type="text" name="pseudonym" placeholder="pseudonym">
+        <input type="text" name="long_url" placeholder="Enter the link here">
+        <input type="text" name="pseudonym" placeholder="Enter link alias here">
         <select name="type_access">
             <option value="public">public</option>
             <option value="auth">auth</option>
             <option value="private">private</option>
         </select>
 
-        <button type="submit">Add link</button>
+        <button type="submit">Shorten URL</button>
     </form>
 
     {% with messages = get_flashed_messages() %}
@@ -37,19 +37,22 @@
     <table border="1">
         <tr>
             <th>shortened</th>
+            <th>count redirects</th>
             <th>access</th>
         </tr>
         {% for link in data['shortened_links'] %}
             <tr>
-                <td>{{ data['server_url'] + '/' + link.token }}</td>
+                <td>
+                    <a href="{{ data['server_url'] + '/' + link.token }}">{{ data['server_url'] + '/' + link.token }}</a>
+                </td>
+                <td>
+                    {{ link.count_redirects }}
+                </td>
                 <td>
                     <select name="current_type_access" type="submit">
+                        <option value="{{ link.access_type }}" selected>{{ link.access_type }}</option>
                         {% for access_type in data['access_types'] %}
-                            {% if access_type == link.access_type %}
-                                <option value="{{ link.access_type }}" selected>{{ link.access_type }}</option>
-                            {% else %}
-                                <option>{{ access_type }}</option>
-                            {% endif %}
+                            <option>{{ access_type }}</option>
                         {% endfor %}
                     </select>
                 </td>
