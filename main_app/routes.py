@@ -4,7 +4,7 @@ from main_app.db_config import db
 
 import hashlib, random
 
-from flask import render_template, redirect, url_for, request, flash, session
+from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -16,34 +16,31 @@ def index():
 @app.route('/<token>', methods=['GET', 'POST'])
 def redirect_page(token):
     shortened_link = Shortened_link.query.filter_by(token=token).first()
-
+    
     if shortened_link is None:
         flash('No such link')
 
         return render_template('index.html')
     else:
-        access_type = shortened_link.access_type
-        is_authenticated = current_user.is_authenticated
-        long_url = shortened_link.long_url
-        user_id = shortened_link.user_id
-        
-        if access_type == 'public':
-            return redirect(long_url)
-        elif is_authenticated:
-            if access_type == 'auth':
-                return redirect(long_url)
-            elif access_type == 'private':
-                if user_id == current_user.id:
-                    return redirect(long_url)
-                else:
-                    flash("You don't have access")
+        error = check_link_access_type(shortened_link, current_user)
 
-                    return redirect(url_for('index'))
+        if not error:
+            return redirect(shortened_link.long_url)
         else:
-            flash('You are not authorized')
-            
-            return redirect(url_for('index'))
+            flash(error)
+            return render_template('error.html')
 
+def check_link_access_type(shortened_link, current_user):
+    link_access_type = shortened_link.access_type
+    link_user_id = shortened_link.user_id
+
+    if link_access_type == 'public':
+        return
+    if current_user.is_authenticated:
+        if not (link_access_type == 'private' and link_user_id == current_user.id):
+            return "You don't have access"
+    else:
+        return 'You are not authorized'
 
 @app.route('/main', methods=['GET'])
 @login_required
@@ -63,16 +60,16 @@ def add_link():
     pseudonym = request.form['pseudonym']
     type_access = request.form['type_access']
 
-    if pseudonym:
-        token = pseudonym
+    if long_url:
+        if pseudonym:
+            token = pseudonym
+        else:
+            token = hashlib.md5(long_url.encode()).hexdigest()[:random.randint(8,12)]
+
+        db.session.add(Shortened_link(token=token, long_url=long_url, type_access=type_access, user_id=current_user.id))
+        db.session.commit()
     else:
-        token = hashlib.md5(long_url.encode()).hexdigest()[:random.randint(8,12)]
-
-    user_id = current_user.id
-
-    flash('Please fill in the long url')
-    db.session.add(Shortened_link(token, long_url, type_access, user_id))
-    db.session.commit()
+        flash('Please fill in the long url')
 
     return redirect(url_for('main'))
 
