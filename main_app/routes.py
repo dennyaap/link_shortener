@@ -2,8 +2,6 @@ from main_app import app, server_url
 from main_app.models import Shortened_link, User
 from main_app.db_config import db
 
-import hashlib, random
-
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -13,16 +11,16 @@ from werkzeug.security import check_password_hash, generate_password_hash
 def index():
     return render_template('index.html', isAuth=current_user.is_authenticated)
 
-@app.route('/<token>', methods=['GET', 'POST'])
+@app.route('/<token>', methods=['GET'])
 def redirect_page(token):
-    shortened_link = Shortened_link.query.filter_by(token=token).first()
+    shortened_link = Shortened_link.get_link(token)
     
     if shortened_link is None:
         flash('No such link')
 
         return render_template('index.html')
     else:
-        error = check_link_access_type(shortened_link, current_user)
+        error = Shortened_link.check_link_access_type(shortened_link, current_user)
 
         if not error:
             return redirect(shortened_link.long_url)
@@ -30,25 +28,13 @@ def redirect_page(token):
             flash(error)
             return render_template('error.html')
 
-def check_link_access_type(shortened_link, current_user):
-    link_access_type = shortened_link.access_type
-    link_user_id = shortened_link.user_id
-
-    if link_access_type == 'public':
-        return
-    if current_user.is_authenticated:
-        if not (link_access_type == 'private' and link_user_id == current_user.id):
-            return "You don't have access"
-    else:
-        return 'You are not authorized'
-
 @app.route('/main', methods=['GET'])
 @login_required
 def main():
     data = dict()
 
     data['server_url'] = server_url
-    data['shortened_links'] = Shortened_link.query.filter_by(user_id=current_user.id).all()
+    data['shortened_links'] = Shortened_link.get_user_links(current_user_id=current_user.id)
     data['access_types'] = ['public', 'auth', 'private']
 
     return render_template('main.html', data=data)
@@ -64,10 +50,9 @@ def add_link():
         if pseudonym:
             token = pseudonym
         else:
-            token = hashlib.md5(long_url.encode()).hexdigest()[:random.randint(8,12)]
+            token = Shortened_link.generate_token(long_url, min, max)
 
-        db.session.add(Shortened_link(token=token, long_url=long_url, type_access=type_access, user_id=current_user.id))
-        db.session.commit()
+            Shortened_link.add_link(token, long_url, type_access, current_user_id=current_user.id)
     else:
         flash('Please fill in the long url')
 
@@ -86,7 +71,7 @@ def login():
             password = request.form['password']
 
             if login and password:
-                user = User.query.filter_by(login=login).first()
+                user = User.find_user(login)
 
                 if user and check_password_hash(user.password, password):
                     login_user(user)
@@ -111,11 +96,8 @@ def register():
             flash('Please, fill all field')
         else:
             hash_password = generate_password_hash(password)
-            new_user = User(login=login, password=hash_password)
-            db.session.add(new_user)
-            db.session.commit()
 
-            login_user(new_user)
+            login_user(User.add_new_user(login, hash_password))
 
             return redirect(url_for('main'))
 
