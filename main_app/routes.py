@@ -2,7 +2,7 @@ from main_app import app, server_url
 from main_app.models import Shortened_link, User
 from main_app.db_config import db
 
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, session
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -23,6 +23,7 @@ def redirect_page(token):
         error = Shortened_link.check_link_access_type(shortened_link, current_user)
 
         if not error:
+            Shortened_link.update_count_link_redirects(token=token, count=1)
             return redirect(shortened_link.long_url)
         else:
             flash(error)
@@ -52,7 +53,7 @@ def add_link():
         else:
             token = Shortened_link.generate_token(long_url, min, max)
 
-            Shortened_link.add_link(token, long_url, type_access, current_user_id=current_user.id)
+            Shortened_link.add_link(token=token, logn_url=long_url, type_access=type_access, current_user_id=current_user.id, count_redirects=0)
     else:
         flash('Please fill in the long url')
 
