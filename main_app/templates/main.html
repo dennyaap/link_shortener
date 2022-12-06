@@ -50,9 +50,13 @@
                 </td>
                 <td>
                     <select name="current_type_access" type="submit">
-                        <option value="{{ link.access_type }}" selected>{{ link.access_type }}</option>
+                        
                         {% for access_type in data['access_types'] %}
-                            <option>{{ access_type }}</option>
+                            {% if access_type == link.access_type %}
+                                <option value="{{ link.access_type }}" selected>{{ link.access_type }}</option>
+                            {% else %}
+                                <option>{{ access_type }}</option>
+                            {% endif %}
                         {% endfor %}
                     </select>
                 </td>
