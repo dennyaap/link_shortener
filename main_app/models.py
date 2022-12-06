@@ -41,8 +41,8 @@ class Shortened_link(db.Model):
     def get_user_links(current_user_id):
         return Shortened_link.query.filter_by(user_id=current_user_id).all()
     
-    def add_link(token, long_url, type_access, current_user_id):
-        db.session.add(Shortened_link(token=token, long_url=long_url, type_access=type_access, user_id=current_user_id))
+    def add_link(token, long_url, type_access, current_user_id, count_redirects):
+        db.session.add(Shortened_link(token=token, long_url=long_url, type_access=type_access, user_id=current_user_id, count_redirects=count_redirects))
         db.session.commit()
 
     def check_link_access_type(shortened_link, current_user):
