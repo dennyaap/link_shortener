@@ -11,11 +11,11 @@
     <div class="container mt-3">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                <ul class="flashes">
+                <div class="flashes mt-3">
                     {% for message in messages %}
-                        <li class="alert alert-danger" role="alert">{{ message }}</li>
+                        <div class="alert alert-danger" role="alert">{{ message }}</div>
                     {% endfor %}
-                </ul>
+                    </div>
             {% endif %}
         {% endwith %}
     </div>
