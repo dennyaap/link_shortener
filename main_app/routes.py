@@ -123,6 +123,12 @@ def edit(token):
         return redirect(url_for('main'))
     return render_template('edit.html', data=data)
 
+@app.route('/delete/<token>', methods=['GET', 'POST'])
+@login_required
+def delete(token):
+    Shortened_link.delete_link(token)
+    return redirect(url_for('main'))
+
 @app.route('/error', methods=['GET'])
 def error():
     return render_template('error.html')

@@ -78,7 +78,10 @@ class Shortened_link(db.Model):
         Shortened_link.query.filter_by(id=current_shortened_link.id).update(dict(pseudonym=pseudonym, access_type=access_type))
 
         db.session.commit()
-
+    @classmethod
+    def delete_link(self, token):
+        db.session.delete(self.get_link(token))
+        db.session.commit()
 
 @login_manager.user_loader
 def load_user(user_id):

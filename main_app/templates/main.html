@@ -65,6 +65,7 @@
                 <th>count redirects</th>
                 <th>access type</th>
                 <th></th>
+                <th></th>
             </thead>
             {% for link in data['shortened_links'] %}
                 <tr>
@@ -84,7 +85,10 @@
                         {{ link.access_type }}
                     </td>
                     <td>
-                        <a href="{{ data['server_url'] + '/edit/' + link.token}}">edit</a>
+                        <a href="{{ data['server_url'] + '/edit/' + link.token}}" class="link-primary">edit</a>
+                    </td>
+                    <td>
+                        <a href="{{ data['server_url'] + '/delete/' + link.token}}" class="link-danger">delete</a>
                     </td>
                 </tr>
             {% endfor %}
