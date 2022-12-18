@@ -16,9 +16,7 @@
           </button>
           
             <form class="d-flex">
-                
-              <button class="btn btn-outline-danger" type="submit"><a href="{{ url_for('logout') }}">Logout</a>
-              </button>
+                <a href="{{ url_for('logout') }}" class="link link-danger">Logout</a>
             </form>
           </div>
         </div>
@@ -60,7 +58,7 @@
     
         {% if data['shortened_links'] %}
         <table class="table table-striped">
-            <thead>
+            <thead class="table-dark">
                 <th>original</th>
                 <th>shortened</th>
                 <th>pseudonym</th>
