@@ -54,7 +54,9 @@ class Shortened_link(db.Model):
         if link_access_type == 'public':
             return
         if current_user.is_authenticated:
-            if not (link_access_type == 'private' and link_user_id == current_user.id):
+            if link_access_type == 'auth':
+                return
+            if not link_user_id == current_user.id:
                 return "You don't have access"
         else:
             return 'You are not authorized'
