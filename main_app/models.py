@@ -25,15 +25,17 @@ class Shortened_link(db.Model):
     long_url = db.Column(db.String(255), nullable=False)
     access_type = db.Column(db.String(15), nullable=False)
     count_redirects = db.Column(db.Integer, nullable=False)
+    pseudonym = db.Column(db.String(255), nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    def __init__(self, token, long_url, type_access, user_id, count_redirects):
+    def __init__(self, token, long_url, type_access, user_id, count_redirects, pseydonym):
         self.token = token
         self.long_url = long_url
         self.access_type = type_access
         self.user_id = user_id
         self.count_redirects = count_redirects
+        self.pseudonym = pseydonym
 
     def get_link(token):
         return Shortened_link.query.filter_by(token=token).first()
@@ -41,8 +43,8 @@ class Shortened_link(db.Model):
     def get_user_links(current_user_id):
         return Shortened_link.query.filter_by(user_id=current_user_id).all()
     
-    def add_link(token, long_url, type_access, current_user_id, count_redirects):
-        db.session.add(Shortened_link(token=token, long_url=long_url, type_access=type_access, user_id=current_user_id, count_redirects=count_redirects))
+    def add_link(token, long_url, type_access, current_user_id, count_redirects, pseudonym = ''):
+        db.session.add(Shortened_link(token=token, long_url=long_url, type_access=type_access, user_id=current_user_id, count_redirects=count_redirects, pseydonym=pseudonym))
         db.session.commit()
 
     def check_link_access_type(shortened_link, current_user):

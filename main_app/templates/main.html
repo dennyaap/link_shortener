@@ -38,6 +38,7 @@
         <tr>
             <th>original</th>
             <th>shortened</th>
+            <th>pseudonym</th>
             <th>count redirects</th>
             <th>access</th>
         </tr>
@@ -47,7 +48,10 @@
                     <a href="{{ link.long_url }}">{{ link.long_url }}</a>
                 </td>
                 <td>
-                    <a href="{{ data['server_url'] + '/s/' + link.token }}">{{ data['server_url'] + '/' + link.token }}</a>
+                    <a href="{{ data['server_url'] + '/s/' + link.token }}">{{ data['server_url'] + '/s/' + link.token }}</a>
+                </td>
+                <td>
+                    {{ link.pseudonym }}
                 </td>
                 <td>
                     {{ link.count_redirects }}

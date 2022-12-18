@@ -48,15 +48,12 @@ def add_link():
     type_access = request.form['type_access']
 
     if long_url:
-        if pseudonym:
-            token = pseudonym
-        else:
+        token = Shortened_link.generate_token(long_url)
+
+        while Shortened_link.get_link(token):
             token = Shortened_link.generate_token(long_url)
 
-            while Shortened_link.get_link(token):
-                token = Shortened_link.generate_token(long_url)
-
-        Shortened_link.add_link(token=token, long_url=long_url, type_access=type_access, current_user_id=current_user.id, count_redirects=0)
+        Shortened_link.add_link(token=token, long_url=long_url, type_access=type_access, current_user_id=current_user.id, count_redirects=0, pseudonym=pseudonym)    
     else:
         flash('Please fill in the long url')
 
