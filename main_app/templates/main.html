@@ -40,7 +40,8 @@
             <th>shortened</th>
             <th>pseudonym</th>
             <th>count redirects</th>
-            <th>access</th>
+            <th>access type</th>
+            <th></th>
         </tr>
         {% for link in data['shortened_links'] %}
             <tr>
@@ -57,16 +58,10 @@
                     {{ link.count_redirects }}
                 </td>
                 <td>
-                    <select name="current_type_access" type="submit">
-                        
-                        {% for access_type in data['access_types'] %}
-                            {% if access_type == link.access_type %}
-                                <option value="{{ link.access_type }}" selected>{{ link.access_type }}</option>
-                            {% else %}
-                                <option>{{ access_type }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
+                    {{ link.access_type }}
+                </td>
+                <td>
+                    <a href="{{ data['server_url'] + '/edit/' + link.token}}">edit</a>
                 </td>
             </tr>
         {% endfor %}

@@ -36,7 +36,6 @@ def main():
 
     data['server_url'] = server_url
     data['shortened_links'] = Shortened_link.get_user_links(current_user_id=current_user.id)
-    data['access_types'] = ['public', 'auth', 'private']
 
     return render_template('main.html', data=data)
 
@@ -111,6 +110,24 @@ def logout():
     logout_user()
     
     return redirect(url_for('index'))
+
+@app.route('/edit/<token>', methods=['GET', 'POST'])
+@login_required
+def edit(token):
+    data = dict()
+    data['shortened_link'] = Shortened_link.get_link(token)
+    data['access_types'] = ['public', 'auth', 'private']
+
+    if request.method == 'POST':
+        pseudonym = request.form['pseudonym']
+        access_type = request.form['current_type_access']
+
+        Shortened_link.edit_link(token=token, pseudonym=pseudonym, access_type=access_type)
+
+        print('dfgdfgdfgdf')
+
+        return redirect(url_for('main'))
+    return render_template('edit.html', data=data)
 
 @app.after_request
 def redirect_to_signin(response):

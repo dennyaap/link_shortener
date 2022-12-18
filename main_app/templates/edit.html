@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>edit</title>
+</head>
+<body>
+    <form method="post">
+        <label for="pseudonym">pseudonym</label>
+        <input type="text" name="pseudonym" id="pseudonym" value="{{ data['shortened_link'].pseudonym }}">
+
+        <label for="current_type_access" for="access_type">access type</label>
+        <select name="current_type_access" id="access_type">
+                        
+            {% for access_type in data['access_types'] %}
+                {% if access_type == data['shortened_link'].access_type %}
+                    <option value="{{ access_type }}" selected>{{ access_type }}</option>
+                {% else %}
+                    <option>{{ access_type }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+
+        <button>edit</button>
+    </form>
+</body>
+</html>
