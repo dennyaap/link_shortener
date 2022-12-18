@@ -11,7 +11,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 def index():
     return render_template('index.html', isAuth=current_user.is_authenticated)
 
-@app.route('/<token>', methods=['GET'])
+@app.route('/s/<token>', methods=['GET'])
 def redirect_page(token):
     shortened_link = Shortened_link.get_link(token)
     

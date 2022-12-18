@@ -36,6 +36,7 @@
     {% if data['shortened_links'] %}
     <table border="1">
         <tr>
+            <th>original</th>
             <th>shortened</th>
             <th>count redirects</th>
             <th>access</th>
@@ -43,7 +44,10 @@
         {% for link in data['shortened_links'] %}
             <tr>
                 <td>
-                    <a href="{{ data['server_url'] + '/' + link.token }}">{{ data['server_url'] + '/' + link.token }}</a>
+                    <a href="{{ link.long_url }}">{{ link.long_url }}</a>
+                </td>
+                <td>
+                    <a href="{{ data['server_url'] + '/s/' + link.token }}">{{ data['server_url'] + '/' + link.token }}</a>
                 </td>
                 <td>
                     {{ link.count_redirects }}
