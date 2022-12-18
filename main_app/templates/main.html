@@ -5,69 +5,95 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Links</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 </head>
 <body>
-    <a href="{{ url_for('logout') }}">Logout</a>
-    <h2>Create a shortened link</h2>
-    <form method="post" action="/add_link">
-        <input type="text" name="long_url" placeholder="Enter the link here">
-        <input type="text" name="pseudonym" placeholder="Enter link alias here">
-        <select name="type_access">
-            <option value="public">public</option>
-            <option value="auth">auth</option>
-            <option value="private">private</option>
-        </select>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{{ data['server_url'] }}">Link shortener</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          
+            <form class="d-flex">
+                
+              <button class="btn btn-outline-danger" type="submit"><a href="{{ url_for('logout') }}">Logout</a>
+              </button>
+            </form>
+          </div>
+        </div>
+    </nav>
+    <div class="container mt-3">
+        <form method="post" action="/add_link">
+            <div class="form-group">
+                <label for="long_url">Long url</label>
+                <input type="text" class="form-control" id="long_url" placeholder="Enter the link here" name="long_url">
+            </div>
+            <div class="form-group mt-3">
+                <label for="pseudonym">Pseudonym</label>
+                <input type="text" class="form-control" id="pseudonym" placeholder="Pseudonym" name="pseudonym">
+            </div>
+            <div class="form-group mt-3">
+                <label for="pseudonym">Access type</label>
+                <select class="form-select" name="type_access">
+                    <option value="public">public</option>
+                    <option value="auth">auth</option>
+                    <option value="private">private</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Shorten URL</button>
+           
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flashes">
+                        {% for message in messages %}
+                            <li class="alert alert-danger" role="alert">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+        </form>
+    </div>
 
-        <button type="submit">Shorten URL</button>
-    </form>
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul class="flashes">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-    {% endwith %}
-
-    <h3>Links list:</h3>
+    <div class="container-fluid">
+        <h5>Links list:</h5>
     
-    {% if data['shortened_links'] %}
-    <table border="1">
-        <tr>
-            <th>original</th>
-            <th>shortened</th>
-            <th>pseudonym</th>
-            <th>count redirects</th>
-            <th>access type</th>
-            <th></th>
-        </tr>
-        {% for link in data['shortened_links'] %}
-            <tr>
-                <td>
-                    <a href="{{ link.long_url }}">{{ link.long_url }}</a>
-                </td>
-                <td>
-                    <a href="{{ data['server_url'] + '/s/' + link.token }}">{{ data['server_url'] + '/s/' + link.token }}</a>
-                </td>
-                <td>
-                    {{ link.pseudonym }}
-                </td>
-                <td>
-                    {{ link.count_redirects }}
-                </td>
-                <td>
-                    {{ link.access_type }}
-                </td>
-                <td>
-                    <a href="{{ data['server_url'] + '/edit/' + link.token}}">edit</a>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-    {% else %}
-        The list is empty
-    {% endif %}
+        {% if data['shortened_links'] %}
+        <table class="table table-striped">
+            <thead>
+                <th>original</th>
+                <th>shortened</th>
+                <th>pseudonym</th>
+                <th>count redirects</th>
+                <th>access type</th>
+                <th></th>
+            </thead>
+            {% for link in data['shortened_links'] %}
+                <tr>
+                    <td>
+                        <a href="{{ link.long_url }}">{{ link.long_url }}</a>
+                    </td>
+                    <td>
+                        <a href="{{ data['server_url'] + '/s/' + link.token }}">{{ data['server_url'] + '/s/' + link.token }}</a>
+                    </td>
+                    <td>
+                        {{ link.pseudonym }}
+                    </td>
+                    <td>
+                        {{ link.count_redirects }}
+                    </td>
+                    <td>
+                        {{ link.access_type }}
+                    </td>
+                    <td>
+                        <a href="{{ data['server_url'] + '/edit/' + link.token}}">edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+            The list is empty
+        {% endif %}
+    </div>
 </body>
 </html>

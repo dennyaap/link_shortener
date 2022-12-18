@@ -7,10 +7,6 @@ from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    return render_template('index.html', isAuth=current_user.is_authenticated)
-
 @app.route('/s/<token>', methods=['GET'])
 def redirect_page(token):
     shortened_link = Shortened_link.get_link(token)
@@ -56,6 +52,7 @@ def add_link():
     else:
         flash('Please fill in the long url')
 
+    print('fdggdfgdf')
     return redirect(url_for('main'))
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -99,7 +96,7 @@ def register():
 
             login_user(User.add_new_user(login, hash_password))
 
-            return redirect(url_for('main'))
+            return redirect(url_for('/'))
 
     return render_template('register.html')
 
@@ -123,8 +120,6 @@ def edit(token):
         access_type = request.form['current_type_access']
 
         Shortened_link.edit_link(token=token, pseudonym=pseudonym, access_type=access_type)
-
-        print('dfgdfgdfgdf')
 
         return redirect(url_for('main'))
     return render_template('edit.html', data=data)
