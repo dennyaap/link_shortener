@@ -25,11 +25,11 @@ def redirect_page(token):
             flash(error)
             return render_template('error.html')
 
-@app.route('/main', methods=['GET'])
+@app.route('/', methods=['GET'])
 @login_required
 def main():
     data = dict()
-
+    
     data['server_url'] = server_url
     data['shortened_links'] = Shortened_link.get_user_links(current_user_id=current_user.id)
 
@@ -52,7 +52,6 @@ def add_link():
     else:
         flash('Please fill in the long url')
 
-    print('fdggdfgdf')
     return redirect(url_for('main'))
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -96,7 +95,7 @@ def register():
 
             login_user(User.add_new_user(login, hash_password))
 
-            return redirect(url_for('/'))
+            return redirect(url_for('main'))
 
     return render_template('register.html')
 
@@ -106,7 +105,7 @@ def register():
 def logout():
     logout_user()
     
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 @app.route('/edit/<token>', methods=['GET', 'POST'])
 @login_required
@@ -123,6 +122,10 @@ def edit(token):
 
         return redirect(url_for('main'))
     return render_template('edit.html', data=data)
+
+@app.route('/error', methods=['GET'])
+def error():
+    return render_template('error.html')
 
 @app.after_request
 def redirect_to_signin(response):
