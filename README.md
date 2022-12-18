@@ -35,7 +35,7 @@ And finally create an .env file in the main_app folder, in which specify: (for e
 ```
 SECRET_KEY=sweetchocolate123
 DATABASE_URI=postgresql://postgres:root@localhost/link_shortener
-SERVER_URI=http://127.0.0.1:5000
+SERVER_URL=http://127.0.0.1:5000
 ``` 
 
 To run the application use the command:
