@@ -53,6 +53,9 @@ def add_link():
         else:
             token = Shortened_link.generate_token(long_url)
 
+            while Shortened_link.get_link(token):
+                token = Shortened_link.generate_token(long_url)
+
         Shortened_link.add_link(token=token, long_url=long_url, type_access=type_access, current_user_id=current_user.id, count_redirects=0)
     else:
         flash('Please fill in the long url')
